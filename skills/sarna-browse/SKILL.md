@@ -115,7 +115,7 @@ Search sarna.net wiki and cascade through linked pages with strict constraints.
    - Prefer content pages over meta/category pages
 4. **Track constraints**: Maintain counters — never exceed `depth` (3) levels or `total` (10) pages. Stop cascade when either limit is reached.
 5. **Summarize**: For each page, summarize content preserving original paragraph count. Keep original language (no translation).
-6. **Aggregate**: Compile all fetched page summaries into the hierarchical aggregate format and save to `sarna-data/search-{query}-{YYYY-MM-DD}.md`. This is the complete dataset for downstream processing and follow-up extraction.
+6. **Aggregate**: Compile all fetched page summaries into the hierarchical aggregate format and save to `sarna-data/search-{query}-{yyyy-MM-dd-HH-mm-ss}.md`. This is the complete dataset for downstream processing and follow-up extraction.
 7. **User-level output**: Read the aggregate file. Identify the content most relevant to the user's original query. Re-summarize into a focused, coherent narrative that directly answers the user's question. Preserve paragraph structure where possible. Present this curated summary in the conversation.
 
 ### Cascade Constraint Tracking
@@ -186,7 +186,7 @@ Fetch a random wiki page — no cascade.
 
 1. Use WebFetch on `https://www.sarna.net/wiki/Special:Random` with prompt: "Provide the full content of this wiki page. Preserve the original paragraph structure. Include the page title."
 2. Summarize the page — preserve original paragraph count, keep original language (no translation).
-3. **Present results in the conversation** and also save to `sarna-data/random-{YYYY-MM-DD}.md`.
+3. **Present results in the conversation** and also save to `sarna-data/random-{yyyy-MM-dd-HH-mm-ss}.md`.
 
 ### Output Format (conversation)
 
@@ -205,8 +205,8 @@ When the user provides input that is not a new explicit command, treat it as a f
 
 1. **Identify the most recent local data**:
    - For news: check `sarna-cache/news/` (most recently accessed).
-   - For search: check `sarna-data/search-{query}-{date}.md` (most recent by date).
-   - For random: check `sarna-data/random-{date}.md` (most recent by date).
+   - For search: check `sarna-data/search-{query}-*.md` (most recent by timestamp).
+   - For random: check `sarna-data/random-*.md` (most recent by timestamp).
 2. **Read the local file(s)**.
 3. **Re-extract or transform** based on the follow-up request:
    - "Translate" → translate the saved content into the requested language.
@@ -222,7 +222,7 @@ When the user provides input that is not a new explicit command, treat it as a f
 1. **Preserve paragraph count**: Do not collapse multiple paragraphs into one. Match the source's paragraph structure.
 2. **No automatic translation**: Output in the same language as the source unless user explicitly requests translation.
 3. **Save locally**: Write fetched data to `sarna-data/` directory for downstream processing. Write news summaries to `sarna-cache/news/` for caching.
-4. **Date format**: Use YYYY-MM-DD for file names and headers.
+4. **Timestamp format**: Use `yyyy-MM-dd-HH-mm-ss` for file names (year-month-day-hour-minute-second). Use `yyyy-MM-dd` for display headers.
 
 ## Resources
 

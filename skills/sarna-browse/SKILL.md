@@ -12,6 +12,7 @@ Browse www.sarna.net — a BattleTech/MechWarrior wiki.
 1. **All results go to the conversation**. The user interacts entirely through chat. Present every summary, link, and result in the conversation thread. Never present a local file path as the final answer.
 2. **Local files are internal only**. `sarna-cache/` and `sarna-data/` exist for caching and downstream processing. If a user asks for previously fetched data, read the local file and echo its contents into the conversation.
 3. **Full-text requests**: If a user asks for the full original article, provide the sarna.net URL link in the conversation, not the cached summary.
+4. **Plain-text links only**: In conversation output, links must be plain text (`Title: https://...` or `URL: https://...`). Never use markdown link syntax (`[Title](https://...)`) because chat markdown renders it as unclickable colored text. The user must be able to see and copy the full URL.
 
 ## Session Behavior
 
@@ -82,11 +83,14 @@ News articles are immutable once published. Cache processed summaries to avoid r
 
 ### Output Format (conversation)
 
-```markdown
-# Sarna News — {date}
+Use `references/news-formatter.md` as the template.
+
+```
+# Sarna News — {yyyy-MM-dd}
 
 ## {Article Title}
-*Published: {article date}* | *URL: {article_url}*
+Published: {article_date}
+URL: {full_article_url}
 
 {Summarized content preserving paragraph structure}
 
@@ -128,13 +132,13 @@ If `pages_fetched` reaches 10 or `current_depth` reaches 3, stop cascade immedia
 
 ### Aggregate Format (saved locally)
 
-```markdown
-# Sarna Search — {query} — {date}
+```
+# Sarna Search — {query} — {yyyy-MM-dd-HH-mm-ss}
 
 ## Level 0: Search Results
 
 ### {Page Title}
-*URL: {page_url}*
+URL: {page_url}
 
 {Summarized content preserving paragraph structure}
 
@@ -143,7 +147,7 @@ If `pages_fetched` reaches 10 or `current_depth` reaches 3, stop cascade immedia
 ## Level 1: Cascade
 
 ### {Page Title}
-*From: {parent page title}* | *URL: {page_url}*
+From: {parent_page_title} | URL: {page_url}
 
 {Summarized content preserving paragraph structure}
 
@@ -158,24 +162,26 @@ If `pages_fetched` reaches 10 or `current_depth` reaches 3, stop cascade immedia
 
 ### User-Level Output Format (conversation)
 
-```markdown
+Use `references/search-formatter.md` as the template.
+
+```
 # Sarna Search — {query}
 
-{Focused narrative summarizing the most relevant findings from the aggregate data}
+## Introduction
+
+{Focused narrative summarizing the most relevant findings}
+
+---
+
+## Body
+
+{Flexible paragraphs, subsections, or analysis}
 
 ---
 
 ## Sources
-- {Page Title}: {page_url}
+- {Page Title}: {full_url}
 - [Repeat for key sources]
-
-## Details
-### {Most Relevant Page Title}
-{Selected paragraphs most relevant to the query}
-
----
-### {Next Most Relevant Page Title}
-{Selected paragraphs most relevant to the query}
 ```
 
 ## Random Mode
@@ -190,11 +196,13 @@ Fetch a random wiki page — no cascade.
 
 ### Output Format (conversation)
 
-```markdown
-# Sarna Random — {date}
+Use `references/random-formatter.md` as the template.
+
+```
+# Sarna Random — {yyyy-MM-dd}
 
 ## {Page Title}
-*URL: {page_url}*
+URL: {full_page_url}
 
 {Summarized content preserving paragraph structure}
 ```
@@ -227,3 +235,6 @@ When the user provides input that is not a new explicit command, treat it as a f
 ## Resources
 
 - `references/urls.md` — URL patterns, sitemap, and valid link criteria for cascade
+- `references/news-formatter.md` — Conversation output template for news mode
+- `references/random-formatter.md` — Conversation output template for random mode
+- `references/search-formatter.md` — Conversation output template for search mode

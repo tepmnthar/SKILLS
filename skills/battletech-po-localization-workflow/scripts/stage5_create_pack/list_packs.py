@@ -43,6 +43,8 @@ def read_keys_from_file(path: str):
     else:
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
+        if isinstance(data, dict):
+            data = data.get("entries", [])
         if isinstance(data, list):
             return [str(item.get("Key", "")).strip() for item in data if item.get("Key")]
     return []
@@ -51,7 +53,7 @@ def read_keys_from_file(path: str):
 def get_pack_keys(workspace: str, index: int):
     """Return list of keys for a pack, preferring the most processed file available."""
     pack_dir = os.path.join(workspace, PACK_DIR)
-    for suffix in (".csv", ".preprocessed.json", ".json"):
+    for suffix in (".review.csv", ".preprocessed.json", ".json"):
         path = os.path.join(pack_dir, f"pack_{index:04d}{suffix}")
         keys = read_keys_from_file(path)
         if keys:
@@ -88,7 +90,7 @@ def main():
         has_created = os.path.isfile(os.path.join(pack_dir, f"pack_{idx:04d}.json"))
         has_preprocessed = os.path.isfile(os.path.join(pack_dir, f"pack_{idx:04d}.preprocessed.json"))
         has_translated = os.path.isfile(os.path.join(pack_dir, f"pack_{idx:04d}.translated.json"))
-        has_csv = os.path.isfile(os.path.join(pack_dir, f"pack_{idx:04d}.csv"))
+        has_csv = os.path.isfile(os.path.join(pack_dir, f"pack_{idx:04d}.review.csv"))
 
         if not has_created:
             if next_uncreated is None:

@@ -4,24 +4,28 @@ You are translating a batch of game UI / dialogue strings from a **BattleTech-un
 
 ## Input
 
-`<workspace>/packs/pack_0000.preprocessed.json` — a JSON array of:
+`<workspace>/packs/pack_0000.preprocessed.json` — a JSON object:
 
 ```
 {
-  "Key": "<id>",
-  "msgid": "<original English>",
   "matched_terms": [
-    {"term": "<English term found in msgid>", "translation": "<Chinese translation from terminology DB>"}
+    {"term": "<English term>", "translation": "<Chinese translation from terminology DB>"}
+  ],
+  "entries": [
+    {"Key": "<id>", "msgid": "<original English>"},
+    ...
   ]
 }
 ```
 
+The top-level `matched_terms` is a **pack-wide** terminology reference — the union of all terms found across every entry in this pack, deduplicated.
+
 ## Task
 
-Translate `msgid` to Simplified Chinese. The `matched_terms` array lists terminology entries that **appear** in the original text. You must use your own judgment to decide whether each matched term is semantically appropriate in the specific sentence context.
+Translate each entry's `msgid` to Simplified Chinese. The `matched_terms` list provides terminology suggestions that **may** appear in one or more entries. For each entry, judge which terms (if any) are relevant to that specific `msgid`.
 
-- If a matched term **fits the context**, use its provided Chinese translation (or a natural grammatical variant of it).
-- If a matched term **does not fit the context** (e.g. the word looks the same but carries a different meaning), translate the passage yourself and **ignore** the suggested term.
+- If a term from `matched_terms` **appears in the entry and fits the context**, use its provided Chinese translation (or a natural grammatical variant of it).
+- If a term **does not appear in the entry** or **does not fit the context** (e.g. the word looks the same but carries a different meaning), ignore it and translate freely.
 
 **Only translate content that can be clearly translated into Chinese.** If you are uncertain about any part, output that part verbatim in the original language and translate only the portions you are confident about.
 

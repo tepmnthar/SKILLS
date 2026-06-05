@@ -99,7 +99,8 @@ def process_single_pack(cur, terms, ngram_max, workspace: str, index: int):
         pack = json.load(f)
 
     deduped = 0
-    out = []
+    entries = []
+    pack_terms = {}
     for i, entry in enumerate(pack, 1):
         msgid = entry["msgid"]
         key = entry["Key"]
@@ -117,17 +118,24 @@ def process_single_pack(cur, terms, ngram_max, workspace: str, index: int):
             deduped += 1
             continue
         matched = find_matched_terms(msgid, terms, ngram_max) if terms else []
-        out.append({
+        for m in matched:
+            tk = m["term"].lower()
+            if tk not in pack_terms:
+                pack_terms[tk] = m
+        entries.append({
             "Key": key,
             "msgid": msgid,
-            "matched_terms": matched,
         })
         if i % 50 == 0:
             print(f"[stage6] processed {i}/{len(pack)}")
 
+    out_data = {
+        "matched_terms": list(pack_terms.values()),
+        "entries": entries,
+    }
     out_path = os.path.join(workspace, PACK_DIR, f"pack_{index:04d}.preprocessed.json")
     with open(out_path, "w", encoding="utf-8") as f:
-        json.dump(out, f, ensure_ascii=False, indent=2)
+        json.dump(out_data, f, ensure_ascii=False, indent=2)
 
     return len(pack), deduped, out_path
 

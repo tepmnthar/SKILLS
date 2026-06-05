@@ -139,15 +139,15 @@ python3 $SKILL_ROOT/scripts/stage6_preprocess_pack/preprocess_pack.py \
     --workspace <workspace> --all
 ```
 - Drops entries whose `msgid` already has a translated twin in DB (and copies that translation into the current row).
-- For surviving entries, finds matching terminology phrases and records them in `matched_terms` (deduplicated per entry) for the LLM to judge contextual appropriateness in Stage 7. `msgid` stays untouched as DB key.
+- For surviving entries, finds matching terminology phrases and accumulates them into a **pack-level** `matched_terms` list (deduplicated across all entries) for the LLM to judge contextual appropriateness in Stage 7. `msgid` stays untouched as DB key.
 
-Processes every pack in `<workspace>/packs/` at once. Outputs `pack_0000.preprocessed.json` for each, shaped `[{"Key": "...", "msgid": "...", "matched_terms": [{"term": "...", "translation": "..."}]}]`. The `matched_terms` array lists terminology entries that appear in `msgid`; the LLM decides in Stage 7 whether each term is semantically appropriate in context.
+Processes every pack in `<workspace>/packs/` at once. Outputs `pack_0000.preprocessed.json` for each, shaped `{"matched_terms": [{"term": "...", "translation": "..."}], "entries": [{"Key": "...", "msgid": "..."}]}`. The `matched_terms` array is a pack-wide terminology reference; the LLM decides in Stage 7 which terms apply to each entry.
 
 If you need to reprocess a single pack, use `--index <I>` instead of `--all`. **STOP**.
 
 ## Stage 7 — LLM translation (manual)
 
-Read every `<workspace>/packs/pack_*.preprocessed.json` and the prompt at `$SKILL_ROOT/scripts/stage7_translate_pack/translate_prompt.md`. Translate each entry's `msgid` to Simplified Chinese using the `matched_terms` list for reference, write corresponding `<workspace>/packs/pack_*.translated.json` shaped `[{"Key": "...", "msgstr": "..."}]`.
+Read every `<workspace>/packs/pack_*.preprocessed.json` and the prompt at `$SKILL_ROOT/scripts/stage7_translate_pack/translate_prompt.md`. The file contains a top-level `matched_terms` (pack-wide terminology reference) and an `entries` array. Translate each entry's `msgid` to Simplified Chinese using the terminology for reference, write corresponding `<workspace>/packs/pack_*.translated.json` shaped `[{"Key": "...", "msgstr": "..."}]`.
 
 Process all packs before moving on; there is no looping back.
 

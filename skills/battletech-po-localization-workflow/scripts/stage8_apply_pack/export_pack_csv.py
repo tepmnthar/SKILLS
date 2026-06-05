@@ -48,11 +48,11 @@ def process_single_pack(workspace, index):
     if os.path.isfile(preprocessed_path):
         with open(preprocessed_path, "r", encoding="utf-8") as f:
             preprocessed = json.load(f)
-        if isinstance(preprocessed, list):
-            for item in preprocessed:
-                key = item.get("Key")
-                if key:
-                    preproc_lookup[key] = item
+        entries = preprocessed.get("entries", []) if isinstance(preprocessed, dict) else preprocessed
+        for item in entries:
+            key = item.get("Key")
+            if key:
+                preproc_lookup[key] = item
 
     out_path = os.path.join(pack_dir, f"pack_{index:04d}.review.csv")
     with open(out_path, "w", encoding="utf-8-sig", newline="") as f:

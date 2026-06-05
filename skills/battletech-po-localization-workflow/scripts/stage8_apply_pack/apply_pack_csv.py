@@ -39,11 +39,11 @@ def process_single_pack(workspace, index, conn, cur):
     if os.path.isfile(preprocessed_path):
         with open(preprocessed_path, "r", encoding="utf-8") as f:
             preprocessed = json.load(f)
-        if isinstance(preprocessed, list):
-            for item in preprocessed:
-                k = item.get("Key")
-                if k:
-                    msgid_lookup[k] = item.get("msgid", "")
+        entries = preprocessed.get("entries", []) if isinstance(preprocessed, dict) else preprocessed
+        for item in entries:
+            k = item.get("Key")
+            if k:
+                msgid_lookup[k] = item.get("msgid", "")
 
     updated = 0
     blank_skipped = 0

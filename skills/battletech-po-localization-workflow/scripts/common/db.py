@@ -25,13 +25,13 @@ CREATE TABLE IF NOT EXISTS terminology (
 """
 
 
-def db_path(workspace: str) -> str:
-    return os.path.join(workspace, DB_NAME)
+def db_path(workspace: str, db_name: str = DB_NAME) -> str:
+    return os.path.join(workspace, db_name)
 
 
-def open_db(workspace: str) -> sqlite3.Connection:
+def open_db(workspace: str, db_name: str = DB_NAME) -> sqlite3.Connection:
     os.makedirs(workspace, exist_ok=True)
-    conn = sqlite3.connect(db_path(workspace))
+    conn = sqlite3.connect(db_path(workspace, db_name))
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA foreign_keys=ON")
     return conn

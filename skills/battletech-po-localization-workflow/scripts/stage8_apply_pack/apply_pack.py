@@ -7,6 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from common.db import open_db, ensure_schema  # noqa: E402
+from common.config import load_config  # noqa: E402
 
 
 def main():
@@ -14,6 +15,8 @@ def main():
     ap.add_argument("--workspace", required=True)
     ap.add_argument("--index", type=int, required=True)
     args = ap.parse_args()
+
+    config = load_config(args.workspace)
 
     src = os.path.join(args.workspace, f"pack_{args.index}.translated.json")
     if not os.path.isfile(src):
@@ -25,7 +28,7 @@ def main():
         print("[stage8] ERROR: expected JSON array", file=sys.stderr)
         sys.exit(1)
 
-    conn = open_db(args.workspace)
+    conn = open_db(args.workspace, config["db_name"])
     ensure_schema(conn)
     cur = conn.cursor()
     cur.execute("BEGIN")

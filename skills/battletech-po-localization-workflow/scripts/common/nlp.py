@@ -22,11 +22,13 @@ def tokenize(text: str):
     return [(m.group(0), m.start(), m.end()) for m in TOKEN_RE.finditer(text)]
 
 
-def is_meaningful(tok: str) -> bool:
+def is_meaningful(tok: str, min_len: int = 3, stopwords=None) -> bool:
+    if stopwords is None:
+        stopwords = STOPWORDS
     low = tok.lower()
-    if len(low) < 3:
+    if len(low) < min_len:
         return False
-    if low in STOPWORDS:
+    if low in stopwords:
         return False
     if low.isdigit():
         return False
@@ -44,14 +46,14 @@ def ngrams(tokens, n_min=1, n_max=3):
             yield phrase, window
 
 
-def enumerate_candidate_phrases(text: str, n_min=1, n_max=3):
+def enumerate_candidate_phrases(text: str, n_min=1, n_max=3, min_len: int = 3, stopwords=None):
     """High-level: enumerate filtered candidate phrases for terminology mining.
     Drops any n-gram whose first or last token is a stopword/short token.
     Returns list of phrase strings (lowercased)."""
     toks = tokenize(text)
     out = []
     for phrase, window in ngrams(toks, n_min, n_max):
-        if not is_meaningful(window[0][0]) or not is_meaningful(window[-1][0]):
+        if not is_meaningful(window[0][0], min_len, stopwords) or not is_meaningful(window[-1][0], min_len, stopwords):
             continue
         out.append(phrase)
     return out

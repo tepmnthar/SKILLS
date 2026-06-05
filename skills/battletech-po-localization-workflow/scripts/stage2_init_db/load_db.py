@@ -8,6 +8,7 @@ from pathlib import Path
 # Allow `python3 stage2_init_db/load_db.py` run directly: add scripts/ to path.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from common.db import open_db, ensure_schema  # noqa: E402
+from common.config import load_config  # noqa: E402
 
 
 def main():
@@ -15,12 +16,14 @@ def main():
     ap.add_argument("--workspace", required=True)
     args = ap.parse_args()
 
+    config = load_config(args.workspace)
+
     src = os.path.join(args.workspace, "entries.jsonl")
     if not os.path.isfile(src):
         print(f"[db] ERROR: missing {src} (run stage 1 first)", file=sys.stderr)
         sys.exit(1)
 
-    conn = open_db(args.workspace)
+    conn = open_db(args.workspace, config["db_name"])
     ensure_schema(conn)
 
     rows = []

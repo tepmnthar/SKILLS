@@ -104,7 +104,13 @@ def main():
             if n % 500 == 0:
                 print(f"[extract] processed {n} entries")
     print(f"[extract] DONE — wrote {n} entries to {out_path}")
-    print(f"[extract] stats: translated={translated} placeholder={placeholder} valid={n - translated - placeholder}")
+    valid = sum(
+        1
+        for e in entries
+        if not bool(CHINESE_RE.search(e["msgstr"] or ""))
+        and not ("{" in (e["msgid"] or "") and "}" in (e["msgid"] or ""))
+    )
+    print(f"[extract] stats: translated={translated} placeholder={placeholder} valid={valid}")
 
 
 if __name__ == "__main__":

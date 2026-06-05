@@ -14,6 +14,10 @@ Output ONLY a JSON array to `<workspace>/filtered_terms.json`:
 [ { "term": "<verbatim term from input>" }, ... ]
 ```
 
+## What happens next
+
+The filtered terms will be exported to a CSV spreadsheet where a human reviewer will add Simplified Chinese translations. Prioritise terms that (a) are BattleTech-specific and (b) are non-obvious to translate — proper nouns and lore terms that require a consistent, agreed-upon Chinese rendering across the entire game.
+
 ## Keep
 
 - BattleTech-specific proper nouns (mech model names, weapon system names, faction names, planet names, character names).

@@ -43,6 +43,17 @@ Translate each entry's `msgid` to Simplified Chinese. The `matched_terms` list p
 - Do not paraphrase brand / faction / mech names already in Chinese.
 - Do not add commentary, footnotes, or markup.
 
+## Translation style
+
+- **Do not mirror English sentence structure.** Chinese and English have different natural word order. For longer sentences and paragraphs, restructure clauses, reorder modifiers, and adjust phrasing to produce idiomatic Chinese that reads naturally to a native speaker — rather than a word-for-word calque of the English syntax.
+- You must preserve the **complete semantic content** of the original — no information may be omitted or added — but you are free to rearrange clause order, split or merge sentences, and choose different phrasing to achieve fluent Chinese expression.
+- Short UI labels and item names should remain concise and direct; this restructuring guidance applies primarily to dialogue, descriptions, and narrative passages.
+
+## JSON safety
+
+- **Never use ASCII double quotes (`"`, U+0022) inside a JSON string value as Chinese quotation marks.** Use the Unicode pairs `\u201c` (left `"`) and `\u201d` (right `"`) instead. Failing to do so breaks the JSON structure.
+- If the original `msgid` contains literal ASCII quotes that you must preserve, escape them as `\"` within the JSON string.
+
 ## Output
 
 Write `<workspace>/packs/pack_0000.translated.json` shaped:
